@@ -1,6 +1,6 @@
 # === flask_app.py — app entrypoint ===
-from dotenv import load_dotenv
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv()
 
 import os
 from app import create_app
