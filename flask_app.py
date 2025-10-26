@@ -17,14 +17,17 @@ print(f"[flask_app] Using: {config_class.__name__}")
 # Build app
 app = create_app(config_class)
 
-# Ensure tables exist and seed if empty
-from app.seed import app as seed_app, db as seed_db, Mechanic
-with seed_app.app_context():
-    seed_db.create_all()
-    if not Mechanic.query.first():
-        from app.seed import *
-    print("[DB] Tables ensured + seed check complete")
+# === Ensure tables exist locally only ===
+if os.getenv("FLASK_ENV") == "development":
+    from app.seed import app as seed_app, db as seed_db, Mechanic
+    with seed_app.app_context():
+        seed_db.create_all()
+        if not Mechanic.query.first():
+            from app.seed import *
+            print("[DB] Tables ensured + seed check complete")
+
 
 # Gunicorn serves on Render; locally run `flask --app flask_app run`
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=10000)
+
