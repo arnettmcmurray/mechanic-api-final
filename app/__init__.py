@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 
 # === Extensions ===
