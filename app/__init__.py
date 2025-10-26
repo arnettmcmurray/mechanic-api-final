@@ -71,20 +71,18 @@ def create_app(config_name=None):
     app.register_blueprint(swagger_bp, url_prefix=SWAGGER_URL)
 
 # === Root ===
-@limiter.exempt
-@app.get("/")
-def root():
-    return {
-        "message": "Mechanic Workshop API is live",
-        "docs": "/api/docs",
-    }, 200
+    @limiter.exempt
+    @app.route("/", methods=["GET"])
+    def root():
+        return {
+            "message": "Mechanic Workshop API is live",
+            "docs": "/api/docs",
+        }, 200
 
-
-# === Health check ===
-@limiter.exempt
-@app.get("/ping")
-def ping():
-    return {"status": "ok", "env": app.config["ENV"]}, 200
-
+    # === Health check ===
+    @limiter.exempt
+    @app.route("/ping", methods=["GET"])
+    def ping():
+        return {"status": "ok", "env": app.config["ENV"]}, 200
 
     return app
