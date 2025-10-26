@@ -13,7 +13,7 @@ from app.blueprints.inventory import inventory_bp
 from config import DevelopmentConfig, TestingConfig, ProductionConfig
 
 # === Load env ===
-load_dotenv()
+#load_dotenv()
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.yaml'
