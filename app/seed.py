@@ -1,20 +1,12 @@
 # === seed.py — auto-seed only if empty ===
 import os
 from flask import Flask
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from config import DevelopmentConfig, ProductionConfig
 from app.extensions import db
 from app.models import Mechanic, Customer, Inventory, ServiceTicket
 
-# === seed.py — auto-seed only if empty ===
-import os
-from flask import Flask
-from dotenv import load_dotenv
-from config import DevelopmentConfig, ProductionConfig
-from app.extensions import db
-from app.models import Mechanic, Customer, Inventory, ServiceTicket
-
-load_dotenv()
+#load_dotenv()
 
 # Force local DB unless explicitly set to production
 env = os.getenv("FLASK_ENV", "production").lower()
