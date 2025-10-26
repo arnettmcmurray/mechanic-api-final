@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from app.extensions import db
 from app.models import Inventory
-from app.utils.auth import token_required
+from app.auth.auth import token_required
 from .schemas import inventory_schema, inventories_schema
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError

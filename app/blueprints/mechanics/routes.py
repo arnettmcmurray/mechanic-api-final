@@ -2,7 +2,7 @@ from flask import request, jsonify
 from app.extensions import db, limiter
 from app.models import Mechanic, ServiceTicket, ticket_mechanics
 from app.blueprints.mechanics.schemas import mechanic_schema, mechanics_schema, login_schema
-from app.utils.auth import encode_token, token_required
+from app.auth.auth import encode_token, token_required
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, desc

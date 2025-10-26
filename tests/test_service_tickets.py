@@ -2,7 +2,7 @@ import unittest
 from app import create_app
 from app.extensions import db
 from app.models import ServiceTicket, Customer
-from app.utils.auth import encode_token
+from app.auth.auth import encode_token
 
 class TestServiceTickets(unittest.TestCase):
     def setUp(self):

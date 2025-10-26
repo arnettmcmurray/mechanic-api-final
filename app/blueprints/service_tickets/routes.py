@@ -4,7 +4,7 @@ from app.models import ServiceTicket, Mechanic, Inventory
 from .schemas import service_ticket_schema, service_tickets_schema
 from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
-from app.utils.auth import token_required
+from app.auth.auth import token_required
 from . import service_tickets_bp
 
 

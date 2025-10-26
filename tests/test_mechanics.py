@@ -2,7 +2,7 @@ import unittest
 from app import create_app
 from app.extensions import db
 from app.models import Mechanic
-from app.utils.auth import encode_token
+from app.auth.auth import encode_token
 
 
 class TestMechanics(unittest.TestCase):
