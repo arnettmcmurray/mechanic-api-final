@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, app
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 #from dotenv import load_dotenv
@@ -70,17 +70,21 @@ def create_app(config_name=None):
     )
     app.register_blueprint(swagger_bp, url_prefix=SWAGGER_URL)
 
-    # === Root ===
-    @app.get("/")
-    def root():
-        return {
-            "message": "Mechanic Workshop API is live",
-            "docs": "/api/docs",
-        }, 200
+# === Root ===
+@limiter.exempt
+@app.get("/")
+def root():
+    return {
+        "message": "Mechanic Workshop API is live",
+        "docs": "/api/docs",
+    }, 200
 
-    # === Health check ===
-    @app.get("/ping")
-    def ping():
-        return {"status": "ok", "env": env}, 200
+
+# === Health check ===
+@limiter.exempt
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "env": app.config["ENV"]}, 200
+
 
     return app
