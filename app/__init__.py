@@ -45,20 +45,20 @@ def create_app(config_name=None):
     app.register_blueprint(customers_bp, url_prefix="/customers")
     app.register_blueprint(inventory_bp, url_prefix="/inventory")
 
-    # === Apply CORS after routes exist ===
+     # === Apply CORS after routes exist ===
     CORS(
         app,
         resources={r"/*": {"origins": [
-            # Local development
+            # Local dev
             "http://localhost:5173",
             "http://127.0.0.1:5173",
+            # Flask local
             "http://localhost:5000",
             "http://127.0.0.1:5000",
             # Production (Render)
-            "https://mechanic-api.onrender.com",
-            "https://react-mechanic-api.onrender.com"
+            "https://mechanics-api.onrender.com",  # Flask API
+            "https://react-mechanic-api.onrender.com",  # React frontend
         ]}},
-        supports_credentials=True,
         expose_headers=["Content-Type", "Authorization"],
         allow_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
