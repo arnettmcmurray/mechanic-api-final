@@ -1,7 +1,7 @@
-from flask import Flask, app
+from flask import Flask
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-#from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
 # === Extensions ===
@@ -13,7 +13,7 @@ from app.blueprints.inventory import inventory_bp
 from config import DevelopmentConfig, TestingConfig, ProductionConfig
 
 # === Load env ===
-#load_dotenv()
+# load_dotenv()
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.yaml'
@@ -49,12 +49,14 @@ def create_app(config_name=None):
     CORS(
         app,
         resources={r"/*": {"origins": [
+            # Local development
             "http://localhost:5173",
             "http://127.0.0.1:5173",
             "http://localhost:5000",
             "http://127.0.0.1:5000",
-            "https://react-mechanic-api.onrender.com",
-            "https://mechanics-api.onrender.com"
+            # Production (Render)
+            "https://mechanic-api.onrender.com",
+            "https://react-mechanic-api.onrender.com"
         ]}},
         supports_credentials=True,
         expose_headers=["Content-Type", "Authorization"],
@@ -70,7 +72,7 @@ def create_app(config_name=None):
     )
     app.register_blueprint(swagger_bp, url_prefix=SWAGGER_URL)
 
-# === Root ===
+    # === Root ===
     @limiter.exempt
     @app.route("/", methods=["GET"])
     def root():
