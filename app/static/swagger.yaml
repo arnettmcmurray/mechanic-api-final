@@ -1,15 +1,12 @@
 openapi: 3.0.3
 info:
-  title: Mechanic API Final – Swagger + Render Lock
+  title: Mechanic Workshop API
   version: 1.0.0
-  description: |
-    Finalized Swagger for Mechanic Shop API.
-    Matches Postman collection 1:1 and your Flask routes exactly.
 servers:
+  - url: https://mechanics-api.onrender.com
+    description: Production
   - url: http://127.0.0.1:5000
-    description: Local development
-  - url: https://mechanic-api.onrender.com
-    description: Render production
+    description: Local
 
 tags:
   - name: Mechanics

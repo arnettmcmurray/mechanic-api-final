@@ -85,6 +85,9 @@ def create_app(config_name=None):
     @limiter.exempt
     @app.route("/ping", methods=["GET"])
     def ping():
-        return {"status": "ok", "env": app.config["ENV"]}, 200
+        return {
+        "status": "ok",
+        "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
+    }, 200
 
     return app
