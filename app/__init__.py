@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, app
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 # from dotenv import load_dotenv
@@ -11,6 +11,7 @@ from app.blueprints.service_tickets import service_tickets_bp
 from app.blueprints.customers import customers_bp
 from app.blueprints.inventory import inventory_bp
 from config import DevelopmentConfig, TestingConfig, ProductionConfig
+from app.blueprints.seed_trigger.routes import seed_trigger_bp # <====seed trigger blueprint
 
 # === Load env ===
 # load_dotenv()
@@ -44,6 +45,16 @@ def create_app(config_name=None):
     app.register_blueprint(service_tickets_bp, url_prefix="/service_tickets")
     app.register_blueprint(customers_bp, url_prefix="/customers")
     app.register_blueprint(inventory_bp, url_prefix="/inventory")
+    app.register_blueprint(seed_trigger_bp) # <====seed trigger blueprint
+    print("[INIT] Blueprints registered")
+    
+    # === Temporary Seed Trigger (remove after seeding) ===
+    try:
+        from app.blueprints.seed_trigger.routes import seed_trigger_bp
+        app.register_blueprint(seed_trigger_bp)
+        print("[INIT] Seed trigger route loaded (/seed)")
+    except Exception as e:
+        print(f"[INIT] Seed trigger not loaded: {e}")
 
     # === Apply CORS after routes exist ===
     CORS(
