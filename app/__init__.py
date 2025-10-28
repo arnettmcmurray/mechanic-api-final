@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-# from dotenv import load_dotenv
 import os
 
 # === Extensions ===
@@ -11,9 +10,6 @@ from app.blueprints.service_tickets import service_tickets_bp
 from app.blueprints.customers import customers_bp
 from app.blueprints.inventory import inventory_bp
 from config import DevelopmentConfig, TestingConfig, ProductionConfig
-
-# === Load env ===
-# load_dotenv()
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.yaml'
@@ -45,19 +41,16 @@ def create_app(config_name=None):
     app.register_blueprint(customers_bp, url_prefix="/customers")
     app.register_blueprint(inventory_bp, url_prefix="/inventory")
 
-     # === Apply CORS after routes exist ===
+    # === Apply CORS after routes exist ===
     CORS(
         app,
         resources={r"/*": {"origins": [
-            # Local dev
             "http://localhost:5173",
             "http://127.0.0.1:5173",
-            # Flask local
             "http://localhost:5000",
             "http://127.0.0.1:5000",
-            # Production (Render)
-            "https://mechanics-api.onrender.com",  # Flask API
-            "https://react-mechanic-api.onrender.com",  # React frontend
+            "https://mechanics-api.onrender.com",
+            "https://react-mechanic-api.onrender.com",
         ]}},
         expose_headers=["Content-Type", "Authorization"],
         allow_headers=["Content-Type", "Authorization"],
@@ -86,8 +79,20 @@ def create_app(config_name=None):
     @app.route("/ping", methods=["GET"])
     def ping():
         return {
-        "status": "ok",
-        "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
-    }, 200
+            "status": "ok",
+            "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
+        }, 200
+
+
+    # === TEMPORARY SEED TRIGGER FOR RENDER ===
+    # Runs only once when app boots on Render, then can be deleted.
+    try:
+        from seed import seed_data
+        print("⚙️  [Render seed] Running seed_data() ...")
+        seed_data()
+        print("✅ [Render seed] Completed successfully.")
+    except Exception as e:
+        print("⚠️  [Render seed] Skipped or failed:", e)
+    # === END TEMP SEED BLOCK ===
 
     return app

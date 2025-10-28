@@ -1,12 +1,9 @@
 # === seed.py — auto-seed only if empty ===
 import os
 from flask import Flask
-#from dotenv import load_dotenv
 from config import DevelopmentConfig, ProductionConfig
 from app.extensions import db
 from app.models import Mechanic, Customer, Inventory, ServiceTicket
-
-#load_dotenv()
 
 # Force local DB unless explicitly set to production
 env = os.getenv("FLASK_ENV", "production").lower()
@@ -16,45 +13,50 @@ app = Flask(__name__)
 app.config.from_object(config)
 db.init_app(app)
 
-with app.app_context():
-    uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
-    print(f"\n[seed] Using DB: {uri}")
 
-    db.create_all()
+def seed_data():
+    """Seed DB only if empty (safe to call from Render startup)."""
+    with app.app_context():
+        uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+        print(f"\n[seed] Using DB: {uri}")
 
-    if not Mechanic.query.first():
-        print("⚙️  Empty DB — seeding sample data...")
+        db.create_all()
 
-        # Mechanics — use set_password to hash
-        admin = Mechanic(name="Admin", email="admin@shop.com", specialty="Manager")
-        admin.set_password("admin123")
+        if not Mechanic.query.first():
+            print("⚙️  Empty DB — seeding sample data...")
 
-        alex = Mechanic(name="Alex", email="alex@shop.com", specialty="Brakes")
-        alex.set_password("password123")
+            # Mechanics
+            admin = Mechanic(name="Admin", email="admin@shop.com", specialty="Manager")
+            admin.set_password("admin123")
+            alex = Mechanic(name="Alex", email="alex@shop.com", specialty="Brakes")
+            alex.set_password("password123")
+            db.session.add_all([admin, alex])
+            db.session.commit()
 
-        db.session.add_all([admin, alex])
-        db.session.commit()
+            # Customers
+            john = Customer(name="John Doe", email="john@example.com", phone="312-555-1111", car="Honda Civic")
+            jane = Customer(name="Jane Smith", email="jane@example.com", phone="312-555-2222", car="Toyota Camry")
+            db.session.add_all([john, jane])
+            db.session.commit()
 
-        # Customers
-        john = Customer(name="John Doe", email="john@example.com", phone="312-555-1111", car="Honda Civic")
-        jane = Customer(name="Jane Smith", email="jane@example.com", phone="312-555-2222", car="Toyota Camry")
-        db.session.add_all([john, jane])
-        db.session.commit()
+            # Inventory
+            brake = Inventory(name="Brake Pads", price=49.99, quantity=20)
+            oil = Inventory(name="Oil Filter", price=9.99, quantity=50)
+            db.session.add_all([brake, oil])
+            db.session.commit()
 
-        # Inventory
-        brake = Inventory(name="Brake Pads", price=49.99, quantity=20)
-        oil = Inventory(name="Oil Filter", price=9.99, quantity=50)
-        db.session.add_all([brake, oil])
-        db.session.commit()
+            # Tickets
+            ticket1 = ServiceTicket(description="Brake pad replacement", status="Open", customer_id=john.id)
+            ticket2 = ServiceTicket(description="Oil change", status="Closed", customer_id=jane.id)
+            db.session.add_all([ticket1, ticket2])
+            db.session.commit()
 
-        # Tickets
-        ticket1 = ServiceTicket(description="Brake pad replacement", status="Open", customer_id=john.id)
-        ticket2 = ServiceTicket(description="Oil change", status="Closed", customer_id=jane.id)
-        db.session.add_all([ticket1, ticket2])
-        db.session.commit()
+            print("✅ Seed complete — default accounts ready:")
+            print("   admin@shop.com / admin123")
+            print("   alex@shop.com / password123\n")
+        else:
+            print("⏭️  DB already populated — skipping seed.\n")
 
-        print("✅ Seed complete — default accounts ready:")
-        print("   admin@shop.com / admin123")
-        print("   alex@shop.com / password123\n")
-    else:
-        print("⏭️  DB already populated — skipping seed.\n")
+
+if __name__ == "__main__":
+    seed_data()
