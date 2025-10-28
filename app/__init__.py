@@ -1,7 +1,6 @@
-from flask import Flask, app
+from flask import Flask
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
-# from dotenv import load_dotenv
 import os
 
 # === Extensions ===
@@ -11,10 +10,7 @@ from app.blueprints.service_tickets import service_tickets_bp
 from app.blueprints.customers import customers_bp
 from app.blueprints.inventory import inventory_bp
 from config import DevelopmentConfig, TestingConfig, ProductionConfig
-from app.blueprints.seed_trigger.routes import seed_trigger_bp # <====seed trigger blueprint
 
-# === Load env ===
-# load_dotenv()
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.yaml'
@@ -45,14 +41,12 @@ def create_app(config_name=None):
     app.register_blueprint(service_tickets_bp, url_prefix="/service_tickets")
     app.register_blueprint(customers_bp, url_prefix="/customers")
     app.register_blueprint(inventory_bp, url_prefix="/inventory")
-    app.register_blueprint(seed_trigger_bp) # <====seed trigger blueprint
-    print("[INIT] Blueprints registered")
-    
-    # === Temporary Seed Trigger (remove after seeding) ===
+
+    # === Temporary seed trigger (remove after seeding) ===
     try:
         from app.blueprints.seed_trigger.routes import seed_trigger_bp
         app.register_blueprint(seed_trigger_bp)
-        print("[INIT] Seed trigger route loaded (/seed)")
+        print("[INIT] Seed trigger route loaded (/seed/)")
     except Exception as e:
         print(f"[INIT] Seed trigger not loaded: {e}")
 
@@ -97,8 +91,8 @@ def create_app(config_name=None):
     @app.route("/ping", methods=["GET"])
     def ping():
         return {
-        "status": "ok",
-        "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
-    }, 200
+            "status": "ok",
+            "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
+        }, 200
 
     return app
