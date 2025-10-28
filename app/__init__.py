@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
+# from dotenv import load_dotenv
 import os
 
 # === Extensions ===
@@ -10,6 +11,9 @@ from app.blueprints.service_tickets import service_tickets_bp
 from app.blueprints.customers import customers_bp
 from app.blueprints.inventory import inventory_bp
 from config import DevelopmentConfig, TestingConfig, ProductionConfig
+
+# === Load env ===
+# load_dotenv()
 
 SWAGGER_URL = '/api/docs'
 API_URL = '/static/swagger.yaml'
@@ -45,13 +49,16 @@ def create_app(config_name=None):
     CORS(
         app,
         resources={r"/*": {"origins": [
+            # Local development
             "http://localhost:5173",
             "http://127.0.0.1:5173",
             "http://localhost:5000",
             "http://127.0.0.1:5000",
-            "https://mechanics-api.onrender.com",
-            "https://react-mechanic-api.onrender.com",
+            # Production (Render)
+            "https://mechanic-api.onrender.com",
+            "https://react-mechanic-api.onrender.com"
         ]}},
+        supports_credentials=True,
         expose_headers=["Content-Type", "Authorization"],
         allow_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
@@ -79,20 +86,8 @@ def create_app(config_name=None):
     @app.route("/ping", methods=["GET"])
     def ping():
         return {
-            "status": "ok",
-            "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
-        }, 200
-
-
-    # === TEMPORARY SEED TRIGGER FOR RENDER ===
-    # Runs only once when app boots on Render, then can be deleted.
-    try:
-        from seed import seed_data
-        print("⚙️  [Render seed] Running seed_data() ...")
-        seed_data()
-        print("✅ [Render seed] Completed successfully.")
-    except Exception as e:
-        print("⚠️  [Render seed] Skipped or failed:", e)
-    # === END TEMP SEED BLOCK ===
+        "status": "ok",
+        "env": app.config.get("ENV", os.getenv("FLASK_ENV", "production"))
+    }, 200
 
     return app
