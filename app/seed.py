@@ -19,9 +19,9 @@ def seed_data():
     with app.app_context():
         uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
         print(f"\n[seed] Using DB: {uri}")
-        print("🧨 Force reset enabled...")
-        db.drop_all()
-        db.create_all()
+        #print("🧨 Force reset enabled...") <==== seeding clean render db
+        #db.drop_all()
+        #db.create_all()
 
         if not Mechanic.query.first():
             print("⚙️  Empty DB — seeding full dataset...")
