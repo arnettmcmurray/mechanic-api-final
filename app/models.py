@@ -6,14 +6,14 @@ from datetime import datetime
 
 # === Junctions ===
 ticket_mechanics = Table(
-    "service_mechanic",
+    "ticket_mechanics",  # matches Render DB
     db.Model.metadata,
     Column("service_ticket_id", Integer, ForeignKey("service_ticket.id")),
     Column("mechanic_id", Integer, ForeignKey("mechanic.id"))
 )
 
 ticket_parts = Table(
-    "service_ticket_parts",
+    "ticket_parts",  # matches Render DB
     db.Model.metadata,
     Column("service_ticket_id", Integer, ForeignKey("service_ticket.id")),
     Column("inventory_id", Integer, ForeignKey("inventory.id"))
@@ -29,6 +29,7 @@ class Mechanic(db.Model):
     password_hash: Mapped[str] = mapped_column(String(200), nullable=False)
     specialty: Mapped[str] = mapped_column(String(100))
 
+    # connects to service tickets through ticket_mechanics
     tickets = relationship("ServiceTicket", secondary=ticket_mechanics, back_populates="mechanics")
 
     def set_password(self, password: str):
