@@ -1,11 +1,10 @@
-# === seed.py — force reseed for Render grading ===
+# === seed.py — manual reseed only ===
 import os
 from flask import Flask
 from config import DevelopmentConfig, ProductionConfig
 from app.extensions import db
 from app.models import Mechanic, Customer, Inventory, ServiceTicket
 
-# Determine environment
 env = os.getenv("FLASK_ENV", "production").lower()
 config = DevelopmentConfig if env == "development" else ProductionConfig
 
@@ -15,18 +14,15 @@ db.init_app(app)
 
 
 def seed_data():
-    """Seed the DB only if empty. Safe for Render and grading."""
+    """Populate DB only when empty; safe for Render and local dev."""
     with app.app_context():
         uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
         print(f"\n[seed] Using DB: {uri}")
-        #print("🧨 Force reset enabled...") <==== seeding clean render db
-        #db.drop_all()
-        #db.create_all()
 
         if not Mechanic.query.first():
             print("⚙️  Empty DB — seeding full dataset...")
 
-            # === Mechanics ===
+            # Mechanics
             mechanics = [
                 Mechanic(name="Admin", email="admin@shop.com", specialty="Manager"),
                 Mechanic(name="Alex", email="alex@shop.com", specialty="Brakes"),
@@ -37,14 +33,14 @@ def seed_data():
                 Mechanic(name="Ravi", email="ravi@shop.com", specialty="Engine Repair"),
                 Mechanic(name="Nina", email="nina@shop.com", specialty="Body Work"),
             ]
-            mechanics[0].set_password("admin123")  # Admin
+            mechanics[0].set_password("admin123")
             for i, m in enumerate(mechanics[1:], start=1):
                 m.set_password(f"password{i}")
             db.session.add_all(mechanics)
             db.session.commit()
             print("🔧 Mechanics seeded.")
 
-            # === Customers ===
+            # Customers
             customers = [
                 Customer(name="John Doe", email="john@example.com", phone="312-555-1111", car="Honda Civic"),
                 Customer(name="Jane Smith", email="jane@example.com", phone="312-555-2222", car="Toyota Camry"),
@@ -61,7 +57,7 @@ def seed_data():
             db.session.commit()
             print("👥 Customers seeded.")
 
-            # === Inventory ===
+            # Inventory
             inventory_items = [
                 Inventory(name="Brake Pads", price=49.99, quantity=30),
                 Inventory(name="Oil Filter", price=9.99, quantity=100),
@@ -80,7 +76,7 @@ def seed_data():
             db.session.commit()
             print("📦 Inventory seeded.")
 
-            # === Service Tickets ===
+            # Service Tickets
             tickets = [
                 ServiceTicket(description="Brake pad replacement", status="In Progress", mechanic_id=2, customer_id=1),
                 ServiceTicket(description="Oil change", status="Closed", mechanic_id=3, customer_id=2),
@@ -94,10 +90,7 @@ def seed_data():
             db.session.add_all(tickets)
             db.session.commit()
             print("🧾 Service tickets seeded.")
-
-            print("\n✅ Seed complete — ready for grading.")
-            print("   Login with admin@shop.com / admin123\n")
-
+            print("\n✅ Seed complete — ready for use.\n")
         else:
             print("⏭️  DB already populated — skipping reseed.\n")
 

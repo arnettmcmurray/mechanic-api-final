@@ -4,10 +4,8 @@
 
 import os
 from app import create_app
-from app.extensions import db
 from config import DevelopmentConfig, ProductionConfig
 
-# Detect environment
 env = os.getenv("FLASK_ENV", "production").lower()
 config_class = DevelopmentConfig if env == "development" else ProductionConfig
 
@@ -17,17 +15,15 @@ print(f"[flask_app] Using: {config_class.__name__}")
 # Build app
 app = create_app(config_class)
 
-# === Ensure tables exist locally only ===
-if os.getenv("FLASK_ENV") == "development":
-    from app.seed import app as seed_app, db as seed_db, Mechanic
-    with seed_app.app_context():
-        seed_db.create_all()
-        if not Mechanic.query.first():
-            from app.seed import *
-            print("[DB] Tables ensured + seed check complete")
+# === Ensure local tables only (no reseed, no drops) ===
+if env == "development":
+    from app.extensions import db
+    with app.app_context():
+        db.create_all()
+        print("[DB] Local tables ensured — no seed triggered.")
 
-
-# Gunicorn serves on Render; locally run `flask --app flask_app run`
+# Gunicorn for Render, flask run for local
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
 

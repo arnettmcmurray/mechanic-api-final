@@ -6,7 +6,7 @@ seed_trigger_bp = Blueprint("seed_trigger_bp", __name__, url_prefix="/seed")
 
 @seed_trigger_bp.route("/", methods=["POST"])
 def trigger_seed():
-    """Run existing seed_data() safely on Render and print tracebacks."""
+    """Manually trigger seeding — safe for both local & Render."""
     try:
         seed_data()
         return jsonify({"message": "Seed executed successfully"}), 200
