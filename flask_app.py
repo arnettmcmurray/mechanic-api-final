@@ -1,29 +1,19 @@
-# === flask_app.py — app entrypoint ===
-#from dotenv import load_dotenv
-#load_dotenv()
-
+# === flask_app.py — unified entrypoint for dev + prod ===
 import os
 from app import create_app
-from config import DevelopmentConfig, ProductionConfig
 
 env = os.getenv("FLASK_ENV", "production").lower()
-config_class = DevelopmentConfig if env == "development" else ProductionConfig
-
 print(f"[flask_app] Environment: {env}")
-print(f"[flask_app] Using: {config_class.__name__}")
 
-# Build app
-app = create_app(config_class)
+# Create app based on environment
+app = create_app()
 
-# === Ensure local tables only (no reseed, no drops) ===
-if env == "development":
-    from app.extensions import db
-    with app.app_context():
-        db.create_all()
-        print("[DB] Local tables ensured — no seed triggered.")
+# === Print active database ===
+with app.app_context():
+    db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "Unknown")
+    masked_uri = db_uri.replace(os.getenv("DATABASE_URL", ""), "[RENDER_DB_URL]") if "postgres" in db_uri else db_uri
+    print(f"[flask_app] Connected to: {masked_uri}")
 
-# Gunicorn for Render, flask run for local
+# === Run ===
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
-
-
