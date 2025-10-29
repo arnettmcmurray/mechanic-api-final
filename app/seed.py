@@ -1,11 +1,11 @@
-# === seed.py — safe reseed only if empty (for grading) ===
+# === seed.py — force reseed for Render grading ===
 import os
 from flask import Flask
 from config import DevelopmentConfig, ProductionConfig
 from app.extensions import db
 from app.models import Mechanic, Customer, Inventory, ServiceTicket
 
-# Determine environment config
+# Determine environment
 env = os.getenv("FLASK_ENV", "production").lower()
 config = DevelopmentConfig if env == "development" else ProductionConfig
 
@@ -19,7 +19,8 @@ def seed_data():
     with app.app_context():
         uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
         print(f"\n[seed] Using DB: {uri}")
-
+        print("🧨 Force reset enabled...")
+        db.drop_all()
         db.create_all()
 
         if not Mechanic.query.first():
@@ -36,7 +37,6 @@ def seed_data():
                 Mechanic(name="Ravi", email="ravi@shop.com", specialty="Engine Repair"),
                 Mechanic(name="Nina", email="nina@shop.com", specialty="Body Work"),
             ]
-            # Passwords
             mechanics[0].set_password("admin123")  # Admin
             for i, m in enumerate(mechanics[1:], start=1):
                 m.set_password(f"password{i}")
@@ -97,6 +97,7 @@ def seed_data():
 
             print("\n✅ Seed complete — ready for grading.")
             print("   Login with admin@shop.com / admin123\n")
+
         else:
             print("⏭️  DB already populated — skipping reseed.\n")
 
